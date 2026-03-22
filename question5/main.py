@@ -4,7 +4,7 @@
 # This script helped us automate the guessing process by sending many HTTP requests.
 # Each time, we checked whether the phrase "In wonderland right now" appeared on the page, if yes, it's a True response.
 # If the phrase doesn't appear, it's a False response.
-# Using this approach, we were able to efficiently extract the required data from the secure database.
+# Using this approach, we were able to find the required data from the secure database.
 
 import urllib.request
 import urllib.parse
