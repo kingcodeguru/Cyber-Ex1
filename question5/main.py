@@ -25,12 +25,11 @@ def automatic_login():
     }).encode('utf-8')
     
     try:
-        print("[*] Attempting automatic login...")
         urllib.request.urlopen(login_url, data=login_data)
         
         for cookie in cj:
             if cookie.name == 'PHPSESSID':
-                print(f"[+] Login successful! Captured Cookie: {cookie.name}={cookie.value}")
+                print(f"Login successful! Captured Cookie: {cookie.name}={cookie.value}")
                 return True
         return False
     except Exception as e:
