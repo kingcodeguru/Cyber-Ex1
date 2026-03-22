@@ -92,7 +92,6 @@ if __name__ == "__main__":
     print("This script find all of the tables in the \'secure\' database (there\'s only one),\n look for all the columns for the table (again, only one) and find the values of the fields in the table.\n")
 
     if not automatic_login():
-        print("[-] Aborting attack due to login failure.")
         exit(1)
 
     # The following query ment to check if we can even access the db.
