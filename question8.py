@@ -89,3 +89,6 @@ if __name__ == "__main__":
     flag_content = extract_file_content(FLAG)
     
     print(f"Flag content: {flag_content.encode().hex()}")
+    
+    with open('flag.txt', 'w') as f:
+        f.write(flag_content)
