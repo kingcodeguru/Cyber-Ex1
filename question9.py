@@ -1,3 +1,5 @@
+# This script performs a blind SQL injection attack to extract the content of a file from the server.
+# It uses boolean queries to determine the length of the file and its content character by character.
 # Liel Avraham 216728055
 # Amit Solomon 216700930
 

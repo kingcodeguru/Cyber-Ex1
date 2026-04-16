@@ -1,3 +1,5 @@
+# This script performs a blind SQL injection attack to extract the content of a file from the server.
+# It uses boolean queries to determine the length of the file and its content character by character.
 # Liel Avraham 216728055
 # Amit Solomon 216700930
 
@@ -89,6 +91,6 @@ if __name__ == "__main__":
     flag_content = extract_file_content(FLAG)
     
     print(f"Flag content: {flag_content.encode().hex()}")
-    
+
     with open('flag.txt', 'w') as f:
         f.write(flag_content.encode().hex())
