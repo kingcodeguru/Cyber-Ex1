@@ -1,3 +1,6 @@
+# Liel Avraham 216728055
+# Amit Solomon 216700930
+
 # We wrote this script to solve Section 5, Using the blind sql vulnerability.
 # Because the database doesn't return the results directly, we had to figure out another way to extract the data.
 # The idea was to send queries that return only True or False answers, and based on that, guess the value character by character.
