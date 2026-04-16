@@ -91,4 +91,4 @@ if __name__ == "__main__":
     print(f"Flag content: {flag_content.encode().hex()}")
     
     with open('flag.txt', 'w') as f:
-        f.write(flag_content)
+        f.write(flag_content.encode().hex())
