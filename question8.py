@@ -1,3 +1,6 @@
+# Liel Avraham 216728055
+# Amit Solomon 216700930
+
 import urllib.request
 import urllib.parse
 import string
